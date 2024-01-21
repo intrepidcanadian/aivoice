@@ -8,9 +8,10 @@ from dotenv import load_dotenv
 from datetime import datetime
 from glob import glob
 
-load_dotenv()
-api_key = os.getenv('COHERE_API_KEY')
-co = cohere.Client(api_key)
+# This section for .env
+# load_dotenv()
+# api_key = os.getenv('COHERE_API_KEY')
+# co = cohere.Client(api_key)
 
 def get_audio_clip_count():
     audio_files = glob('./audio/*.wav')
@@ -19,22 +20,19 @@ def get_audio_clip_count():
 
 def count_feedback():
     feedback_file_path = './data/feedback.json'
-    print(feedback_file_path)
     try:
         if os.path.exists(feedback_file_path):
             with open(feedback_file_path, 'r') as file:
                 feedback_data = json.load(file)
-                num_likes = sum(1 for feedback in feedback_data.values() if feedback == 'Like')
-                num_dislikes = sum(1 for feedback in feedback_data.values() if feedback == 'Dislike')
-                num_undecided = sum(1 for feedback in feedback_data.values() if feedback == 'Undecided')
+                num_likes = sum(feedback.get('Like', 0) for feedback in feedback_data.values())
+                num_dislikes = sum(feedback.get('Dislike', 0) for feedback in feedback_data.values())
+                num_undecided = sum(feedback.get('Undecided', 0) for feedback in feedback_data.values())
                 feedback_counts = {
                     'Likes': num_likes,
                     'Dislikes': num_dislikes,
                     'Undecided': num_undecided
                 }
-                print(feedback_counts)
                 return feedback_counts
-             
         else:
             return {'Likes': 0, 'Dislikes': 0, 'Undecided': 0}
     except Exception as e:
@@ -44,6 +42,8 @@ def count_feedback():
 def create_sidebar():
     st.sidebar.title('Radical AIFMC x Cohere GenerativeAI Hackathon')
     st.sidebar.caption('January 2024')
+
+    st.session_state['api_key'] = st.sidebar.text_input('Cohere API Key', key='cohere_api_key')
 
     #Display the number of audio clips stored
     num_audio_clips = get_audio_clip_count()
