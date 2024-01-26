@@ -1,3 +1,4 @@
 streamlit
 cohere
 load_dotenv
+matplotlib
