@@ -10,5 +10,5 @@ scikit-learn
 pydub
 python-dotenv
 parselmouth
-st_audiorec
+
 
